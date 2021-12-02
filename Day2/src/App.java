@@ -17,13 +17,38 @@ public class App {
 
         List<String> data = parser.parseDataStr();
 
+        System.out.println("Part 1: " + directDepth(data));
+        System.out.println("Part 2: " + indirectDepth(data));
+    }
+
+    private int directDepth(List<String> data) {
+        int depth = 0;
+        int distance = 0;
+
+        for (String string : data) {
+            String[] split = string.split(" ");
+
+            if (split[0].equalsIgnoreCase("forward")) {
+                distance += Integer.parseInt(split[1]);
+            } else if (split[0].equalsIgnoreCase("down")) {
+
+                depth += Integer.parseInt(split[1]);
+            } else {
+
+                depth -= Integer.parseInt(split[1]);
+            }
+        }
+
+        return depth * distance;
+    }
+
+    private int indirectDepth(List<String> data) {
         int depth = 0;
         int distance = 0;
         int aim = 0;
 
         for (String string : data) {
             String[] split = string.split(" ");
-
 
             if (split[0].equalsIgnoreCase("forward")) {
                 distance += Integer.parseInt(split[1]);
@@ -37,8 +62,9 @@ public class App {
             }
         }
 
-        System.out.println(depth * distance);
+        return depth * distance;
     }
+
 
 
 }
