@@ -1,8 +1,5 @@
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class App {
 
@@ -16,7 +13,9 @@ public class App {
      */
     private void coreProcess() throws FileNotFoundException {
 
-        List<Integer> data = parseData(1);
+        Parser parser = new Parser(1);
+
+        List<Integer> data = parser.parseDataInt();
 
         System.out.println("Part 1: " + countRawChange(data));
         System.out.println("Part 2: " + countThreeChange(data));
@@ -65,25 +64,5 @@ public class App {
         }
 
         return i;
-    }
-
-    /**
-     * Gets the data from the file with the specified day number, and splits it into individual lines
-     * @param dayNumber the day of the challenge
-     * @return List containing each line of data
-     * @throws FileNotFoundException if the data file cannot be found
-     */
-    private List<Integer> parseData(int dayNumber) throws FileNotFoundException {
-        List<Integer> data = new ArrayList<>();
-
-        File file = new File("Data/data" + dayNumber + ".txt");
-        Scanner sc = new Scanner(file);
-
-        while (sc.hasNextInt()) {
-            data.add(sc.nextInt());
-        }
-        sc.close();
-
-        return data;
     }
 }

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/Advent Of Code 2021.iml" filepath="$PROJECT_DIR$/.idea/Advent Of Code 2021.iml" />
       <module fileurl="file://$PROJECT_DIR$/Day0/Day0.iml" filepath="$PROJECT_DIR$/Day0/Day0.iml" />
       <module fileurl="file://$PROJECT_DIR$/Day1/Day1.iml" filepath="$PROJECT_DIR$/Day1/Day1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Day2/Day2.iml" filepath="$PROJECT_DIR$/Day2/Day2.iml" />
     </modules>
   </component>
 </project>
