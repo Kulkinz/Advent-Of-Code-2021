@@ -63,12 +63,26 @@ public class App {
                     bingoTile.setChecked(true);
                 }
             }
-            for (BingoCard bingoCard : bingoCards) {
-                if (bingoCard.isBingo()) {
-                    System.out.println(bingoCard);
-                    winner = bingoCard;
-                    winningNumber = bingoNum;
-                    break;
+//            for (BingoCard bingoCard : bingoCards) { part 1
+//                if (bingoCard.isBingo()) {
+//                    System.out.println(bingoCard);
+//                    winner = bingoCard;
+//                    winningNumber = bingoNum;
+//                    break;
+//                }
+//            }
+            Iterator bingoCardit = bingoCards.iterator(); // part 2
+            while (bingoCardit.hasNext()) {
+                BingoCard nextBingoCard = (BingoCard) bingoCardit.next();
+                if (nextBingoCard.isBingo()) {
+                    if (bingoCards.size() > 1) {
+                        bingoCardit.remove();
+                    } else {
+                        System.out.println(nextBingoCard);
+                        winner = nextBingoCard;
+                        winningNumber = bingoNum;
+                        break;
+                    }
                 }
             }
             if (winner != null) {
