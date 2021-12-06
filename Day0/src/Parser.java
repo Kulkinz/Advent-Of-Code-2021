@@ -58,4 +58,16 @@ public class Parser {
 
         return data;
     }
+
+    public List<Integer> parseLineInteger() {
+        List<Integer> data = new ArrayList<>();
+
+        String line = sc.next();
+        for (String string : line.split(",")) {
+            data.add(Integer.parseInt(string));
+        }
+        sc.close();
+
+        return data;
+    }
 }
