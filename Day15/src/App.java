@@ -30,7 +30,7 @@ public class App {
         int[][] map = new int[height * 5][width * 5];
 
 
-        Map<Coordinate, Integer> lowestValueForCoordinate = new HashMap<>();
+        int[][] lowestValueForCoordinate = new int[height * 5][width * 5];
 
         for (int n = 0; n < 5; n++) {
             for (int i = 0; i < height; i++) {
@@ -39,12 +39,13 @@ public class App {
                     for (int j = 0; j < width; j++) {
                         int wrapped = (Integer.parseInt("" + string.charAt(j)) + n + m) % 9;
                         map[i + height * n][j + width * m] = wrapped == 0 ? 9 : wrapped;
-                        lowestValueForCoordinate.put(new Coordinate(j + width * m, i + height * n), Integer.MAX_VALUE);
+                        lowestValueForCoordinate[i + height * n][j + width * m] =  Integer.MAX_VALUE;
                     }
                 }
             }
         }
 
+        lowestValueForCoordinate[0][0] = 0;
 
         Path start = new Path();
 
@@ -77,8 +78,8 @@ public class App {
                     clone.visited.add(coordinate);
                     clone.risk += map[coordinate.y][coordinate.x];
 
-                    if (lowestValueForCoordinate.get(coordinate) > clone.risk) {
-                        lowestValueForCoordinate.put(coordinate, clone.risk);
+                    if (lowestValueForCoordinate[coordinate.y][coordinate.x] > clone.risk) {
+                        lowestValueForCoordinate[coordinate.y][coordinate.x] = clone.risk;
                         paths.add(clone);
                     }
                 }
