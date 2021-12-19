@@ -62,6 +62,8 @@ public class App {
 
         Scanner central = null;
 
+        List<Coordinate> scannersPoint = new ArrayList<>();
+
         while (scanners.size() > 1) {
 
             Iterator<Scanner> it = scanners.iterator();
@@ -95,6 +97,7 @@ public class App {
                                 central.changeReferencePoint(central.self);
 
                                 System.out.println("Hit!");
+                                scannersPoint.add(current.self);
                                 it.remove();
                                 break;
                             }
@@ -113,7 +116,20 @@ public class App {
             }
         }
 
-        System.out.println(central.coordinates.size());
+        scannersPoint.add(central.self);
+
+        System.out.println(central.coordinates.size() - scannersPoint.size());
+
+        int max = 0;
+        for (int i = 0; i < scannersPoint.size(); i++) {
+            for (int j = 0; j < scannersPoint.size(); j++) {
+                Coordinate point1 = scannersPoint.get(i);
+                Coordinate point2 = scannersPoint.get(j);
+                max = Math.max(max, Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y) + Math.abs(point1.z - point2.z));
+            }
+        }
+
+        System.out.println(max);
 
     }
 
@@ -125,6 +141,7 @@ public class App {
         public Scanner() {
             coordinates = new LinkedList<>();
             self = new Coordinate(0,0, 0);
+            addPoint(self);
         }
 
         public void addPoint(Coordinate coordinate) {
@@ -136,9 +153,6 @@ public class App {
 
         public void changeReferencePoint(Coordinate newReferencePoint) {
             Coordinate copy = new Coordinate(newReferencePoint.x, newReferencePoint.y, newReferencePoint.z);
-            self.x -= copy.x;
-            self.y -= copy.y;
-            self.z -= copy.z;
             setChanged();
             notifyObservers(copy);
         }
