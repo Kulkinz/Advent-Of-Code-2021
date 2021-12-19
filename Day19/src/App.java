@@ -60,80 +60,78 @@ public class App {
         orderOfOperations.add(Orientation.XY);
         orderOfOperations.add(Orientation.XY);
 
-        Iterator<Scanner> it = scanners.iterator();
-        Scanner central = it.next();
+        Scanner central = null;
 
-        System.out.println(central.coordinates.contains(new Coordinate(404,-588,-901)));
+        while (scanners.size() > 1) {
 
-        while (it.hasNext()) {
-            current = it.next();
+            Iterator<Scanner> it = scanners.iterator();
+            central = it.next();
 
-            int startingSize = central.coordinates.size();
+            while (it.hasNext()) {
+                current = it.next();
 
-            for (Orientation orientation : orderOfOperations) {
-                central.changeReferencePoint(central.self);
-                for (Coordinate coordinate1 : central.coordinates) {
-                    current.changeReferencePoint(current.self);
-                    for (Coordinate coordinate2 : current.coordinates) {
-                        central.changeReferencePoint(coordinate1);
-                        current.changeReferencePoint(coordinate2);
+                int startingSize = central.coordinates.size();
 
-                        Set<Coordinate> coordinatesToCompare = new HashSet<>();
-                        coordinatesToCompare.addAll(current.coordinates);
-                        coordinatesToCompare.addAll(central.coordinates);
-                        Set<Coordinate> other = new HashSet<>();
+                for (Orientation orientation : orderOfOperations) {
+                    central.changeReferencePoint(central.self);
+                    for (Coordinate coordinate1 : central.coordinates) {
+                        current.changeReferencePoint(current.self);
+                        for (Coordinate coordinate2 : current.coordinates) {
+                            central.changeReferencePoint(coordinate1);
+                            current.changeReferencePoint(coordinate2);
 
-                        if (coordinatesToCompare.size() <= (central.coordinates.size() + current.coordinates.size()) - 12) {
+                            List<Coordinate> coordinatesToCompare = new ArrayList<>();
+                            coordinatesToCompare = new ArrayList<>();
+                            coordinatesToCompare.addAll(current.coordinates);
+                            coordinatesToCompare.retainAll(central.coordinates);
 
-                            // We found our match
-                            for (Coordinate newCoordinate : coordinatesToCompare) {
-                                central.addPoint(newCoordinate);
+                            if (coordinatesToCompare.size() >= 12) {
+
+                                // We found our match
+                                for (Coordinate newCoordinate : current.coordinates) {
+                                    central.addPoint(newCoordinate);
+                                }
+
+                                central.changeReferencePoint(central.self);
+
+                                System.out.println("Hit!");
+                                it.remove();
+                                break;
                             }
-                            Set<Coordinate> regeneratedCentral = new HashSet<>();
-                            regeneratedCentral.addAll(central.coordinates);
-                            central.coordinates = regeneratedCentral;
+                        }
 
-                            central.changeReferencePoint(central.self);
-
-                            System.out.println("Hit!");
+                        if (startingSize != central.coordinates.size()) {
                             break;
                         }
-                    }
 
+                    }
                     if (startingSize != central.coordinates.size()) {
                         break;
                     }
-
+                    current.rotatePoints(orientation);
                 }
-                if (startingSize != central.coordinates.size()) {
-                    break;
-                }
-                current.rotatePoints(orientation);
             }
         }
 
-        central.changeReferencePoint(central.self);
-
         System.out.println(central.coordinates.size());
-
-        central.coordinates.removeAll(current.coordinates);
-        current.coordinates.removeAll(central.coordinates);
 
     }
 
     private class Scanner extends Observable {
 
-        Set<Coordinate> coordinates;
+        List<Coordinate> coordinates;
         Coordinate self;
 
         public Scanner() {
-            coordinates = new HashSet<>();
+            coordinates = new LinkedList<>();
             self = new Coordinate(0,0, 0);
         }
 
         public void addPoint(Coordinate coordinate) {
-            coordinates.add(coordinate);
-            addObserver(coordinate);
+            if (!coordinates.contains(coordinate)) {
+                coordinates.add(coordinate);
+                addObserver(coordinate);
+            }
         }
 
         public void changeReferencePoint(Coordinate newReferencePoint) {
