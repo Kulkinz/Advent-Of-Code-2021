@@ -18,10 +18,10 @@ public class App {
 
         List<String> data = parser.parseDataStr();
 
-        State[] aRoom = new State[2];
-        State[] bRoom = new State[2];
-        State[] cRoom = new State[2];
-        State[] dRoom = new State[2];
+        State[] aRoom = new State[4];
+        State[] bRoom = new State[4];
+        State[] cRoom = new State[4];
+        State[] dRoom = new State[4];
 
         aRoom[0] = getStateFromChar(data.get(2).charAt(3));
         bRoom[0] = getStateFromChar(data.get(2).charAt(5));
@@ -33,11 +33,19 @@ public class App {
         cRoom[1] = getStateFromChar(data.get(3).charAt(7));
         dRoom[1] = getStateFromChar(data.get(3).charAt(9));
 
+        aRoom[2] = getStateFromChar(data.get(4).charAt(3));
+        bRoom[2] = getStateFromChar(data.get(4).charAt(5));
+        cRoom[2] = getStateFromChar(data.get(4).charAt(7));
+        dRoom[2] = getStateFromChar(data.get(4).charAt(9));
+
+        aRoom[3] = getStateFromChar(data.get(5).charAt(3));
+        bRoom[3] = getStateFromChar(data.get(5).charAt(5));
+        cRoom[3] = getStateFromChar(data.get(5).charAt(7));
+        dRoom[3] = getStateFromChar(data.get(5).charAt(9));
+
         Map startingMap = new Map(aRoom, bRoom, cRoom, dRoom);
 
-        System.out.println(System.currentTimeMillis());
         System.out.println(getLeastAmountOfMoves(startingMap, Integer.MAX_VALUE));
-        System.out.println(System.currentTimeMillis());
     }
 
     private int getLeastAmountOfMoves(Map map, int compare) {
@@ -46,7 +54,7 @@ public class App {
                 continue;
             }
             if (newMap.isComplete()) {
-                compare = Math.min(compare, newMap.energySoFar);
+                compare = newMap.energySoFar;
             } else {
                 compare = Math.min(compare, getLeastAmountOfMoves(newMap, compare));
             }
@@ -101,120 +109,365 @@ public class App {
             energySoFar += change;
         }
 
+        private int getSlotRemove(State state) {
+            switch (state) {
+                default: return -1;
+                case A:
+                    if (aRoom[0] == State.Empty) {
+                        if (aRoom[1] == State.Empty) {
+                            if (aRoom[2] == State.Empty) {
+                                if (aRoom[3] == State.Empty) {
+                                    return -1;
+                                } else if (aRoom[3] == State.A) {
+                                    return -1;
+                                } else {
+                                    return 3;
+                                }
+                            } else {
+                                if (!allStateBelow(state, 2)) {
+                                    return 2;
+                                } else {
+                                    return -1;
+                                }
+                            }
+                        } else {
+                            if (!allStateBelow(state, 1)) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }
+                    } else {
+                        if (!allStateBelow(state, 0)) {
+                            return 0;
+                        } else {
+                            return -1;
+                        }
+                    }
+                case B:
+                    if (bRoom[0] == State.Empty) {
+                        if (bRoom[1] == State.Empty) {
+                            if (bRoom[2] == State.Empty) {
+                                if (bRoom[3] == State.Empty) {
+                                    return -1;
+                                } else if (!allStateBelow(state, 3)) {
+                                    return 3;
+                                } else {
+                                    return -1;
+                                }
+                            } else {
+                                if (!allStateBelow(state, 2)) {
+                                    return 2;
+                                } else {
+                                    return -1;
+                                }
+                            }
+                        } else {
+                            if (!allStateBelow(state, 1)) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }
+                    } else {
+                        if (!allStateBelow(state, 0)) {
+                            return 0;
+                        } else {
+                            return -1;
+                        }
+                    }
+                case C:
+                    if (cRoom[0] == State.Empty) {
+                        if (cRoom[1] == State.Empty) {
+                            if (cRoom[2] == State.Empty) {
+                                if (cRoom[3] == State.Empty) {
+                                    return -1;
+                                } else if (!allStateBelow(state, 3)) {
+                                    return 3;
+                                } else {
+                                    return -1;
+                                }
+                            } else {
+                                if (!allStateBelow(state, 2)) {
+                                    return 2;
+                                } else {
+                                    return -1;
+                                }
+                            }
+                        } else {
+                            if (!allStateBelow(state, 1)) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }
+                    } else {
+                        if (!allStateBelow(state, 0)) {
+                            return 0;
+                        } else {
+                            return -1;
+                        }
+                    }
+                case D:
+                    if (dRoom[0] == State.Empty) {
+                        if (dRoom[1] == State.Empty) {
+                            if (dRoom[2] == State.Empty) {
+                                if (dRoom[3] == State.Empty) {
+                                    return -1;
+                                } else if (!allStateBelow(state, 3)) {
+                                    return 3;
+                                } else {
+                                    return -1;
+                                }
+                            } else {
+                                if (!allStateBelow(state, 2)) {
+                                    return 2;
+                                } else {
+                                    return -1;
+                                }
+                            }
+                        } else {
+                            if (!allStateBelow(state, 1)) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }
+                    } else {
+                        if (!allStateBelow(state, 0)) {
+                            return 0;
+                        } else {
+                            return -1;
+                        }
+                    }
+            }
+        }
+
+        private int getSlotAvailable(State state) {
+
+            switch (state) {
+                default: return -1;
+                case A:
+                    if (aRoom[0] != State.Empty) {
+                        return -1;
+                    } else {
+                        if (allStateBelow(state, 1)) {
+                            return 0;
+                        } else {
+                            if (aRoom[1] != State.Empty) {
+                                return -1;
+                            } else {
+                                if (allStateBelow(state, 2)) {
+                                    return 1;
+                                } else {
+                                    if (aRoom[2] != State.Empty) {
+                                        return -1;
+                                    } else {
+                                        if (allStateBelow(state, 3)) {
+                                            return 2;
+                                        } else {
+                                            if (aRoom[3] != State.Empty) {
+                                                return -1;
+                                            } else {
+                                                return 3;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                case B:
+                    if (bRoom[0] != State.Empty) {
+                        return -1;
+                    } else {
+                        if (allStateBelow(state, 1)) {
+                            return 0;
+                        } else {
+                            if (bRoom[1] != State.Empty) {
+                                return -1;
+                            } else {
+                                if (allStateBelow(state, 2)) {
+                                    return 1;
+                                } else {
+                                    if (bRoom[2] != State.Empty) {
+                                        return -1;
+                                    } else {
+                                        if (allStateBelow(state, 3)) {
+                                            return 2;
+                                        } else {
+                                            if (bRoom[3] != State.Empty) {
+                                                return -1;
+                                            } else {
+                                                return 3;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                case C:
+                    if (cRoom[0] != State.Empty) {
+                        return -1;
+                    } else {
+                        if (allStateBelow(state, 1)) {
+                            return 0;
+                        } else {
+                            if (cRoom[1] != State.Empty) {
+                                return -1;
+                            } else {
+                                if (allStateBelow(state, 2)) {
+                                    return 1;
+                                } else {
+                                    if (cRoom[2] != State.Empty) {
+                                        return -1;
+                                    } else {
+                                        if (allStateBelow(state, 3)) {
+                                            return 2;
+                                        } else {
+                                            if (cRoom[3] != State.Empty) {
+                                                return -1;
+                                            } else {
+                                                return 3;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                case D:
+                    if (dRoom[0] != State.Empty) {
+                        return -1;
+                    } else {
+                        if (allStateBelow(state, 1)) {
+                            return 0;
+                        } else {
+                            if (dRoom[1] != State.Empty) {
+                                return -1;
+                            } else {
+                                if (allStateBelow(state, 2)) {
+                                    return 1;
+                                } else {
+                                    if (dRoom[2] != State.Empty) {
+                                        return -1;
+                                    } else {
+                                        if (allStateBelow(state, 3)) {
+                                            return 2;
+                                        } else {
+                                            if (dRoom[3] != State.Empty) {
+                                                return -1;
+                                            } else {
+                                                return 3;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+            }
+        }
+
+        private boolean allStateBelow(State state, int index) {
+            switch (state) {
+                default: return false;
+                case A:
+                    for (int i = index; i < 4; i++) {
+                        if (aRoom[i] != State.A) {
+                            return false;
+                        }
+                    }
+                    return true;
+                case B:
+                    for (int i = index; i < 4; i++) {
+                        if (bRoom[i] != State.B) {
+                            return false;
+                        }
+                    }
+                    return true;
+                case C:
+                    for (int i = index; i < 4; i++) {
+                        if (cRoom[i] != State.C) {
+                            return false;
+                        }
+                    }
+                    return true;
+                case D:
+                    for (int i = index; i < 4; i++) {
+                        if (dRoom[i] != State.D) {
+                            return false;
+                        }
+                    }
+                    return true;
+            }
+        }
+
         public List<Map> generateNextMaps() {
             List<Map> maps = new ArrayList<>();
 
             Map helper;
             int travelDistance;
+            int slot;
             // checking hallway for anything in there
-            for (int i = 0; i < 11; i++) {
+            for (int i = 10; i >= 0; i--) {
                 if (hallway[i] != State.Empty) {
-                    switch (hallway[i]) {
+                    State state = hallway[i];
+                    switch (state) {
                         case A:
                             if (canGetToSpot(i, 2)) {
-                                if (aRoom[0] == State.Empty) {
-                                    if (aRoom[1] == State.Empty) {
-                                        helper = new Map(this);
-                                        // get distance from here to A;
-                                        travelDistance = Math.abs(i - 2);
-                                        travelDistance += 2;
-                                        helper.hallway[i] = State.Empty;
-                                        helper.aRoom[1] = State.A;
-                                        helper.increaseEnergy(travelDistance * 1);
-                                        maps.add(helper);
-                                    } else {
-                                        if (aRoom[1] == State.A) {
-                                            helper = new Map(this);
-                                            // get distance from here to A;
-                                            travelDistance = Math.abs(i - 2);
-                                            travelDistance += 1;
-                                            helper.hallway[i] = State.Empty;
-                                            helper.aRoom[0] = State.A;
-                                            helper.increaseEnergy(travelDistance * 1);
-                                            maps.add(helper);
-                                        }
-                                    }
+                                slot = getSlotAvailable(state);
+                                if (slot != -1) {
+                                    helper = new Map(this);
+                                    travelDistance = Math.abs(i - 2);
+                                    travelDistance += slot + 1;
+                                    helper.hallway[i] = State.Empty;
+                                    helper.aRoom[slot] = state;
+                                    helper.increaseEnergy(travelDistance * getEnergyCost(state));
+                                    maps.add(helper);
                                 }
                             }
                             break;
                         case B:
                             if (canGetToSpot(i, 4)) {
-                                if (bRoom[0] == State.Empty) {
-                                    if (bRoom[1] == State.Empty) {
-                                        helper = new Map(this);
-                                        // get distance from here to B;
-                                        travelDistance = Math.abs(i - 4);
-                                        travelDistance += 2;
-                                        helper.hallway[i] = State.Empty;
-                                        helper.bRoom[1] = State.B;
-                                        helper.increaseEnergy(travelDistance * 10);
-                                        maps.add(helper);
-                                    } else {
-                                        if (bRoom[1] == State.B) {
-                                            helper = new Map(this);
-                                            // get distance from here to B;
-                                            travelDistance = Math.abs(i - 4);
-                                            travelDistance += 1;
-                                            helper.hallway[i] = State.Empty;
-                                            helper.bRoom[0] = State.B;
-                                            helper.increaseEnergy(travelDistance * 10);
-                                            maps.add(helper);
-                                        }
-                                    }
+                                slot = getSlotAvailable(state);
+                                if (slot != -1) {
+                                    helper = new Map(this);
+                                    travelDistance = Math.abs(i - 4);
+                                    travelDistance += slot + 1;
+                                    helper.hallway[i] = State.Empty;
+                                    helper.bRoom[slot] = state;
+                                    helper.increaseEnergy(travelDistance * getEnergyCost(state));
+                                    maps.add(helper);
                                 }
                             }
                             break;
                         case C:
                             if (canGetToSpot(i, 6)) {
-                                if (cRoom[0] == State.Empty) {
-                                    if (cRoom[1] == State.Empty) {
-                                        helper = new Map(this);
-                                        // get distance from here to C;
-                                        travelDistance = Math.abs(i - 6);
-                                        travelDistance += 2;
-                                        helper.hallway[i] = State.Empty;
-                                        helper.cRoom[1] = State.C;
-                                        helper.increaseEnergy(travelDistance * 100);
-                                        maps.add(helper);
-                                    } else {
-                                        if (cRoom[1] == State.C) {
-                                            helper = new Map(this);
-                                            // get distance from here to C;
-                                            travelDistance = Math.abs(i - 6);
-                                            travelDistance += 1;
-                                            helper.hallway[i] = State.Empty;
-                                            helper.cRoom[0] = State.C;
-                                            helper.increaseEnergy(travelDistance * 100);
-                                            maps.add(helper);
-                                        }
-                                    }
+                                slot = getSlotAvailable(state);
+                                if (slot != -1) {
+                                    helper = new Map(this);
+                                    travelDistance = Math.abs(i - 6);
+                                    travelDistance += slot + 1;
+                                    helper.hallway[i] = State.Empty;
+                                    helper.cRoom[slot] = state;
+                                    helper.increaseEnergy(travelDistance * getEnergyCost(state));
+                                    maps.add(helper);
                                 }
                             }
                             break;
                         case D:
                             if (canGetToSpot(i, 8)) {
-                                if (dRoom[0] == State.Empty) {
-                                    if (dRoom[1] == State.Empty) {
-                                        helper = new Map(this);
-                                        // get distance from here to D;
-                                        travelDistance = Math.abs(i - 8);
-                                        travelDistance += 2;
-                                        helper.hallway[i] = State.Empty;
-                                        helper.dRoom[1] = State.D;
-                                        helper.increaseEnergy(travelDistance * 1000);
-                                        maps.add(helper);
-                                    } else {
-                                        if (dRoom[1] == State.D) {
-                                            helper = new Map(this);
-                                            // get distance from here to D;
-                                            travelDistance = Math.abs(i - 8);
-                                            travelDistance += 1;
-                                            helper.hallway[i] = State.Empty;
-                                            helper.dRoom[0] = State.D;
-                                            helper.increaseEnergy(travelDistance * 1000);
-                                            maps.add(helper);
-                                        }
-                                    }
+                                slot = getSlotAvailable(state);
+                                if (slot != -1) {
+                                    helper = new Map(this);
+                                    travelDistance = Math.abs(i - 8);
+                                    travelDistance += slot + 1;
+                                    helper.hallway[i] = State.Empty;
+                                    helper.dRoom[slot] = state;
+                                    helper.increaseEnergy(travelDistance * getEnergyCost(state));
+                                    maps.add(helper);
                                 }
                             }
                             break;
@@ -224,163 +477,64 @@ public class App {
 
             // handle each room
             // handling a, which is available
-            List<Integer> availableSpots = generateAvailableSpots(2);
-            if (aRoom[0] != State.Empty) { // there something there
-                if (aRoom[0] == State.A && aRoom[1] != State.A) { // A is above, something else below
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
 
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 2); // get distance
-                        helper.aRoom[0] = State.Empty;
-                        helper.hallway[spot] = State.A;
-                        helper.increaseEnergy(travelDistance * 1);
-                        maps.add(helper);
-                    }
-                } else if (aRoom[0] != State.A) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
+            List<Integer> availableSpots = generateAvailableSpots(8);
+            slot = getSlotRemove(State.D);
+            if (slot != -1) {
+                for (int spot: availableSpots) {
+                    helper = new Map(this);
 
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 2); // get distance
-                        helper.aRoom[0] = State.Empty;
-                        helper.hallway[spot] = aRoom[0];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(aRoom[0]));
-                        maps.add(helper);
-                    }
-                }
-            } else { // theres nothing there
-                if (aRoom[1] != State.A && aRoom[1] != State.Empty) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
-
-                        travelDistance = 2;
-                        travelDistance += Math.abs(spot - 2); // get distance
-                        helper.aRoom[1] = State.Empty;
-                        helper.hallway[spot] = aRoom[1];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(aRoom[1]));
-                        maps.add(helper);
-                    }
-                }
-            }
-
-            availableSpots = generateAvailableSpots(4);
-            if (bRoom[0] != State.Empty) { // there something there
-                if (bRoom[0] == State.B && bRoom[1] != State.B) { // B is above, something else below
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
-
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 4); // get distance
-                        helper.bRoom[0] = State.Empty;
-                        helper.hallway[spot] = State.B;
-                        helper.increaseEnergy(travelDistance * 10);
-                        maps.add(helper);
-                    }
-                } else if (bRoom[0] != State.B) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
-
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 4); // get distance
-                        helper.bRoom[0] = State.Empty;
-                        helper.hallway[spot] = bRoom[0];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(bRoom[0]));
-                        maps.add(helper);
-                    }
-                }
-            } else { // theres nothing there
-                if (bRoom[1] != State.B && bRoom[1] != State.Empty) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
-
-                        travelDistance = 2;
-                        travelDistance += Math.abs(spot - 4); // get distance
-                        helper.bRoom[1] = State.Empty;
-                        helper.hallway[spot] = bRoom[1];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(bRoom[1]));
-                        maps.add(helper);
-                    }
+                    travelDistance = slot + 1;
+                    travelDistance += Math.abs(spot - 8);
+                    helper.dRoom[slot] = State.Empty;
+                    helper.hallway[spot] = dRoom[slot];
+                    helper.increaseEnergy(travelDistance * getEnergyCost(dRoom[slot]));
+                    maps.add(helper);
                 }
             }
 
             availableSpots = generateAvailableSpots(6);
-            if (cRoom[0] != State.Empty) { // there something there
-                if (cRoom[0] == State.C && cRoom[1] != State.C) { // C is above, something else below
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
+            slot = getSlotRemove(State.C);
+            if (slot != -1) {
+                for (int spot: availableSpots) {
+                    helper = new Map(this);
 
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 6); // get distance
-                        helper.cRoom[0] = State.Empty;
-                        helper.hallway[spot] = State.C;
-                        helper.increaseEnergy(travelDistance * 100);
-                        maps.add(helper);
-                    }
-                } else if (cRoom[0] != State.C) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
-
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 6); // get distance
-                        helper.cRoom[0] = State.Empty;
-                        helper.hallway[spot] = cRoom[0];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(cRoom[0]));
-                        maps.add(helper);
-                    }
-                }
-            } else { // theres nothing there
-                if (cRoom[1] != State.C && cRoom[1] != State.Empty) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
-
-                        travelDistance = 2;
-                        travelDistance += Math.abs(spot - 6); // get distance
-                        helper.cRoom[1] = State.Empty;
-                        helper.hallway[spot] = cRoom[1];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(cRoom[1]));
-                        maps.add(helper);
-                    }
+                    travelDistance = slot + 1;
+                    travelDistance += Math.abs(spot - 6);
+                    helper.cRoom[slot] = State.Empty;
+                    helper.hallway[spot] = cRoom[slot];
+                    helper.increaseEnergy(travelDistance * getEnergyCost(cRoom[slot]));
+                    maps.add(helper);
                 }
             }
 
-            availableSpots = generateAvailableSpots(8);
-            if (dRoom[0] != State.Empty) { // there something there
-                if (dRoom[0] == State.D && dRoom[1] != State.D) { // D is above, something else below
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
+            availableSpots = generateAvailableSpots(4);
+            slot = getSlotRemove(State.B);
+            if (slot != -1) {
+                for (int spot: availableSpots) {
+                    helper = new Map(this);
 
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 8); // get distance
-                        helper.dRoom[0] = State.Empty;
-                        helper.hallway[spot] = State.D;
-                        helper.increaseEnergy(travelDistance * 1000);
-                        maps.add(helper);
-                    }
-                } else if (dRoom[0] != State.D) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
-
-                        travelDistance = 1;
-                        travelDistance += Math.abs(spot - 8); // get distance
-                        helper.dRoom[0] = State.Empty;
-                        helper.hallway[spot] = dRoom[0];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(dRoom[0]));
-                        maps.add(helper);
-                    }
+                    travelDistance = slot + 1;
+                    travelDistance += Math.abs(spot - 4);
+                    helper.bRoom[slot] = State.Empty;
+                    helper.hallway[spot] = bRoom[slot];
+                    helper.increaseEnergy(travelDistance * getEnergyCost(bRoom[slot]));
+                    maps.add(helper);
                 }
-            } else { // theres nothing there
-                if (dRoom[1] != State.D && dRoom[1] != State.Empty) {
-                    for (int spot : availableSpots) {
-                        helper = new Map(this);
+            }
 
-                        travelDistance = 2;
-                        travelDistance += Math.abs(spot - 8); // get distance
-                        helper.dRoom[1] = State.Empty;
-                        helper.hallway[spot] = dRoom[1];
-                        helper.increaseEnergy(travelDistance * getEnergyCost(dRoom[1]));
-                        maps.add(helper);
-                    }
+            availableSpots = generateAvailableSpots(2);
+            slot = getSlotRemove(State.A);
+            if (slot != -1) {
+                for (int spot: availableSpots) {
+                    helper = new Map(this);
+
+                    travelDistance = slot + 1;
+                    travelDistance += Math.abs(spot - 2);
+                    helper.aRoom[slot] = State.Empty;
+                    helper.hallway[spot] = aRoom[slot];
+                    helper.increaseEnergy(travelDistance * getEnergyCost(aRoom[slot]));
+                    maps.add(helper);
                 }
             }
 
@@ -391,7 +545,11 @@ public class App {
             return (aRoom[0] == State.A && aRoom[1] == State.A &&
                     bRoom[0] == State.B && bRoom[1] == State.B &&
                     cRoom[0] == State.C && cRoom[1] == State.C &&
-                    dRoom[0] == State.D && dRoom[1] == State.D);
+                    dRoom[0] == State.D && dRoom[1] == State.D &&
+                    aRoom[2] == State.A && aRoom[3] == State.A &&
+                    bRoom[2] == State.B && bRoom[3] == State.B &&
+                    cRoom[2] == State.C && cRoom[3] == State.C &&
+                    dRoom[2] == State.D && dRoom[3] == State.D);
         }
 
         private boolean canGetToSpot(int start, int goal) {
@@ -468,7 +626,15 @@ public class App {
                     + ((aRoom[1] == State.Empty) ? "." : aRoom[1].name()) + "#"
                     + ((bRoom[1] == State.Empty) ? "." : bRoom[1].name()) + "#"
                     + ((cRoom[1] == State.Empty) ? "." : cRoom[1].name()) + "#"
-                    + ((dRoom[1] == State.Empty) ? "." : dRoom[1].name()) + "#  \n  #########";
+                    + ((dRoom[1] == State.Empty) ? "." : dRoom[1].name()) + "#\n  #"
+                    + ((aRoom[2] == State.Empty) ? "." : aRoom[2].name()) + "#"
+                    + ((bRoom[2] == State.Empty) ? "." : bRoom[2].name()) + "#"
+                    + ((cRoom[2] == State.Empty) ? "." : cRoom[2].name()) + "#"
+                    + ((dRoom[2] == State.Empty) ? "." : dRoom[2].name()) + "#\n  #"
+                    + ((aRoom[3] == State.Empty) ? "." : aRoom[3].name()) + "#"
+                    + ((bRoom[3] == State.Empty) ? "." : bRoom[3].name()) + "#"
+                    + ((cRoom[3] == State.Empty) ? "." : cRoom[3].name()) + "#"
+                    + ((dRoom[3] == State.Empty) ? "." : dRoom[3].name()) + "#  \n  #########";
         }
     }
 
