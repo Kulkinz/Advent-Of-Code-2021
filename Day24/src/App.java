@@ -57,52 +57,38 @@ public class App {
         totalInstructions.add(instructions);
 
 
-        Map<Values, Long> correspondingMax = new HashMap<>();
-        correspondingMax.put(new Values(0,0,0,0), 0L);
+        Map<Values, Long> corresponding = new HashMap<>();
+        corresponding.put(new Values(0,0,0,0), 0L);
 
         for (List<InstructionSet> instructionList : totalInstructions) {
-            Map<Values, Long> nextCorrespondingMax = new HashMap<>();
-            for (Values values : correspondingMax.keySet()) {
-//                boolean quickCalculate = false;
-//                Values base = null;
+            Map<Values, Long> nextCorresponding = new HashMap<>();
+            for (Values values : corresponding.keySet()) {
+
                 for (int i = 1; i < 10; i++) {
-                    Long currentInputTotal = correspondingMax.get(values) * 10 + i;
-                    Values resultingValue;
-//                    if (quickCalculate) {
-//                        if (base == null) {
-//                            base = getResultInput(i, values, instructionList);
-//                            base.y -= i;
-//                            base.z -= i;
-//                        }
-//                        resultingValue = new Values(base);
-//                        resultingValue.y += i;
-//                        resultingValue.z += i;
-//                    } else {
-                        resultingValue = getResultInput(i, values, instructionList);
-//                        if (resultingValue.x == 0) {
-//                            quickCalculate = true;
-//                        }
-//                    }
-                    if (!nextCorrespondingMax.containsKey(resultingValue)) {
-                        nextCorrespondingMax.put(resultingValue, currentInputTotal);
+                    Long currentInputTotal = corresponding.get(values) * 10 + i;
+                    Values resultingValue = getResultInput(i, values, instructionList);
+
+                    if (!nextCorresponding.containsKey(resultingValue)) {
+                        nextCorresponding.put(resultingValue, currentInputTotal);
                     } else {
-                        if (currentInputTotal > nextCorrespondingMax.get(resultingValue)) {
-                            nextCorrespondingMax.put(resultingValue, currentInputTotal);
+                        if (currentInputTotal < nextCorresponding.get(resultingValue)) {
+                            nextCorresponding.put(resultingValue, currentInputTotal);
                         }
                     }
                 }
             }
-            correspondingMax = nextCorrespondingMax;
+            corresponding = nextCorresponding;
         }
 
-        long max = 0;
-//        long min = Long.MAX_VALUE;
-        for (Map.Entry<Values, Long> pair : correspondingMax.entrySet()) {
+//        long max = 0;
+        long min = Long.MAX_VALUE;
+        for (Map.Entry<Values, Long> pair : corresponding.entrySet()) {
             if (pair.getKey().z == 0) {
-                max = Math.max(max, pair.getValue());
+//                max = Math.max(max, pair.getValue());
+                min = Math.min(min, pair.getValue());
             }
         }
-        System.out.println(max);
+        System.out.println(min);
     }
 
     private Values getResultInput(long input, Values values, List<InstructionSet> instructions) {
