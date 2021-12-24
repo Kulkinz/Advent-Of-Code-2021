@@ -83,12 +83,20 @@ public class App {
                 while (order.size() != 0) {
                     char closing = order.removeLast();
                     switch (closing) {
-                        case '(' -> value = value * 5 + 1;
-                        case '[' -> value = value * 5 + 2;
-                        case '{' -> value = value * 5 + 3;
-                        case '<' -> value = value * 5 + 4;
-                        default -> {
-                        }
+                        case '(':
+                            value = value * 5 + 1;
+                            break;
+                        case '[':
+                            value = value * 5 + 2;
+                            break;
+                        case '{':
+                            value = value * 5 + 3;
+                            break;
+                        case '<':
+                            value = value * 5 + 4;
+                            break;
+                        default:
+                            break;
                     }
                 }
                 lineValues.add(value);
