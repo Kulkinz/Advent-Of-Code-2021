@@ -1,17 +1,14 @@
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class App {
 
     public App() throws FileNotFoundException {
         coreProcess();
     }
-
-    long w = 0;
-    long x = 0;
-    long y = 0;
-    long z = 1;
 
     /**
      * Runs the core process of solving the problem
@@ -22,7 +19,7 @@ public class App {
         Parser parser = new Parser(24);
 
         List<String> data = parser.parseDataStr();
-
+        List<List<InstructionSet>> totalInstructions = new ArrayList<>();
         List<InstructionSet> instructions = new ArrayList<>();
 
         for (String string : data) {
@@ -30,6 +27,10 @@ public class App {
             Instruction instruction;
             switch (split[0]) {
                 case "inp":
+                    if (instructions.size() != 0) {
+                        totalInstructions.add(instructions);
+                        instructions = new ArrayList<>();
+                    }
                     instruction = Instruction.inp;
                     break;
                 case "add":
@@ -53,24 +54,59 @@ public class App {
 
             instructions.add(new InstructionSet(instruction, string.substring(4).split(" ")));
         }
+        totalInstructions.add(instructions);
 
 
-//        Collections.reverse(instructions);
+        Map<Values, Long> correspondingMax = new HashMap<>();
+        correspondingMax.put(new Values(0,0,0,0), 0L);
 
-        ArrayList<Long> integers = new ArrayList<>();
+        for (List<InstructionSet> instructionList : totalInstructions) {
+            Map<Values, Long> nextCorrespondingMax = new HashMap<>();
+            for (Values values : correspondingMax.keySet()) {
+//                boolean quickCalculate = false;
+//                Values base = null;
+                for (int i = 1; i < 10; i++) {
+                    Long currentInputTotal = correspondingMax.get(values) * 10 + i;
+                    Values resultingValue;
+//                    if (quickCalculate) {
+//                        if (base == null) {
+//                            base = getResultInput(i, values, instructionList);
+//                            base.y -= i;
+//                            base.z -= i;
+//                        }
+//                        resultingValue = new Values(base);
+//                        resultingValue.y += i;
+//                        resultingValue.z += i;
+//                    } else {
+                        resultingValue = getResultInput(i, values, instructionList);
+//                        if (resultingValue.x == 0) {
+//                            quickCalculate = true;
+//                        }
+//                    }
+                    if (!nextCorrespondingMax.containsKey(resultingValue)) {
+                        nextCorrespondingMax.put(resultingValue, currentInputTotal);
+                    } else {
+                        if (currentInputTotal > nextCorrespondingMax.get(resultingValue)) {
+                            nextCorrespondingMax.put(resultingValue, currentInputTotal);
+                        }
+                    }
+                }
+            }
+            correspondingMax = nextCorrespondingMax;
+        }
 
-        // 99999999999939L 7627591
-        // 99999999999899L 7627583
-        // 99999999999839L 293368
-        // 99999999989839L 11283
-        // 99999969989839L 11273
-        // 99999569989839L 433
-        long input = 99999569989839L;
+        long max = 0;
+//        long min = Long.MAX_VALUE;
+        for (Map.Entry<Values, Long> pair : correspondingMax.entrySet()) {
+            if (pair.getKey().z == 0) {
+                max = Math.max(max, pair.getValue());
+            }
+        }
+        System.out.println(max);
+    }
 
-        w = 0;
-        x = 0;
-        y = 0;
-        z = 0;
+    private Values getResultInput(long input, Values values, List<InstructionSet> instructions) {
+        Values clone = new Values(values);
 
         int[] digits = Long.toString(input).chars().map(c -> c-'0').toArray();
         int i = 0;
@@ -81,16 +117,16 @@ public class App {
                 case inp:
                     switch (instructionSet.arguments[0]) {
                         case "w":
-                            w = digits[i];
+                            clone.w = digits[i];
                             break;
                         case "x":
-                            x = digits[i];
+                            clone.x = digits[i];
                             break;
                         case "y":
-                            y = digits[i];
+                            clone.y = digits[i];
                             break;
                         case "z":
-                            z = digits[i];
+                            clone.z = digits[i];
                             break;
                     }
                     i++;
@@ -98,164 +134,99 @@ public class App {
                 case add:
                     switch (instructionSet.arguments[0]) {
                         case "w":
-                            w += getValue(instructionSet.arguments[1]);
+                            clone.w += getValue(instructionSet.arguments[1], clone);
                             break;
                         case "x":
-                            x += getValue(instructionSet.arguments[1]);
+                            clone.x += getValue(instructionSet.arguments[1], clone);
                             break;
                         case "y":
-                            y += getValue(instructionSet.arguments[1]);
+                            clone.y += getValue(instructionSet.arguments[1], clone);
                             break;
                         case "z":
-                            z += getValue(instructionSet.arguments[1]);
+                            clone.z += getValue(instructionSet.arguments[1], clone);
                             break;
                     }
                     break;
                 case mul:
                     switch (instructionSet.arguments[0]) {
                         case "w":
-                            w *= getValue(instructionSet.arguments[1]);
+                            clone.w *= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "x":
-                            x *= getValue(instructionSet.arguments[1]);
+                            clone.x *= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "y":
-                            y *= getValue(instructionSet.arguments[1]);
+                            clone.y *= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "z":
-                            z *= getValue(instructionSet.arguments[1]);
+                            clone.z *= getValue(instructionSet.arguments[1], clone);
                             break;
                     }
                     break;
                 case div:
                     switch (instructionSet.arguments[0]) {
                         case "w":
-                            w /= getValue(instructionSet.arguments[1]);
+                            clone.w /= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "x":
-                            x /= getValue(instructionSet.arguments[1]);
+                            clone.x /= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "y":
-                            y /= getValue(instructionSet.arguments[1]);
+                            clone.y /= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "z":
-                            z /= getValue(instructionSet.arguments[1]);
+                            clone.z /= getValue(instructionSet.arguments[1], clone);
                             break;
                     }
                     break;
                 case mod:
                     switch (instructionSet.arguments[0]) {
                         case "w":
-                            w %= getValue(instructionSet.arguments[1]);
+                            clone.w %= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "x":
-                            x %= getValue(instructionSet.arguments[1]);
+                            clone.x %= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "y":
-                            y %= getValue(instructionSet.arguments[1]);
+                            clone.y %= getValue(instructionSet.arguments[1], clone);
                             break;
                         case "z":
-                            z %= getValue(instructionSet.arguments[1]);
+                            clone.z %= getValue(instructionSet.arguments[1], clone);
                             break;
                     }
                     break;
                 case eql:
                     switch (instructionSet.arguments[0]) {
                         case "w":
-                            w = (w == getValue(instructionSet.arguments[1])) ? 1 : 0;
+                            clone.w = (clone.w == getValue(instructionSet.arguments[1], clone)) ? 1 : 0;
                             break;
                         case "x":
-                            x = (x == getValue(instructionSet.arguments[1])) ? 1 : 0;
+                            clone.x = (clone.x == getValue(instructionSet.arguments[1], clone)) ? 1 : 0;
                             break;
                         case "y":
-                            y = (y == getValue(instructionSet.arguments[1])) ? 1 : 0;
+                            clone.y = (clone.y == getValue(instructionSet.arguments[1], clone)) ? 1 : 0;
                             break;
                         case "z":
-                            z = (z == getValue(instructionSet.arguments[1])) ? 1 : 0;
+                            clone.z = (clone.z == getValue(instructionSet.arguments[1], clone)) ? 1 : 0;
                             break;
                     }
                     break;
             }
         }
 
-//        for (InstructionSet instructionSet : instructions) {
-//            switch (instructionSet.instruction) {
-//
-//                case inp:
-//                    switch (instructionSet.arguments[0]) {
-//                        case "w":
-//                            integers.add(w);
-//                            break;
-//                        case "x":
-//                            integers.add(x);
-//                            break;
-//                        case "y":
-//                            integers.add(y);
-//                            break;
-//                        case "z":
-//                            integers.add(z);
-//                            break;
-//                    }
-//                    break;
-//                case add:
-//                    switch (instructionSet.arguments[0]) {
-//                        case "w":
-//                            w -= getValue(instructionSet.arguments[1]);
-//                            break;
-//                        case "x":
-//                            x -= getValue(instructionSet.arguments[1]);
-//                            break;
-//                        case "y":
-//                            y -= getValue(instructionSet.arguments[1]);
-//                            break;
-//                        case "z":
-//                            z -= getValue(instructionSet.arguments[1]);
-//                            break;
-//                    }
-//                    break;
-//                case mul:
-//                    switch (instructionSet.arguments[0]) {
-//                        case "w":
-//                            w /= getValue(instructionSet.arguments[1]);
-//                            break;
-//                        case "x":
-//                            x /= getValue(instructionSet.arguments[1]);
-//                            break;
-//                        case "y":
-//                            y /= getValue(instructionSet.arguments[1]);
-//                            break;
-//                        case "z":
-//                            z /= getValue(instructionSet.arguments[1]);
-//                            break;
-//                    }
-//                    break;
-//                case div:
-//                    break;
-//                case mod:
-//                    break;
-//                case eql:
-//                    break;
-//            }
-//        }
-//
-//        Collections.reverse(integers);
-
-        System.out.println(w);
-        System.out.println(x);
-        System.out.println(y);
-        System.out.println(z);
+        return clone;
     }
 
-    private long getValue(String string) {
+    private long getValue(String string, Values values) {
         switch (string) {
             case "w":
-                return w;
+                return values.w;
             case "x":
-                return x;
+                return values.x;
             case "y":
-                return y;
+                return values.y;
             case "z":
-                return z;
+                return values.z;
             default:
                 return Long.parseLong(string);
         }
@@ -268,6 +239,47 @@ public class App {
         public InstructionSet(Instruction instruction, String[] arguments) {
             this.instruction = instruction;
             this.arguments = arguments;
+        }
+    }
+
+    private class Values {
+        int w;
+        int x;
+        int y;
+        int z;
+
+        public Values (int w, int x, int y, int z) {
+            this.w = w;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public Values (Values values) {
+            w = values.w;
+            x = values.x;
+            y = values.y;
+            z = values.z;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Values values = (Values) o;
+
+            if (x != values.x) return false;
+            if (y != values.y) return false;
+            return z == values.z;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = x;
+            result = 31 * result + y;
+            result = 31 * result + z;
+            return result;
         }
     }
 
